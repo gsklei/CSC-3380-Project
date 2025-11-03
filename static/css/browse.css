@@ -1,3 +1,8 @@
+/* browse.css - Browse Page Specific Styles */
+
+/* ==================== */
+/* Header */
+/* ==================== */
 .header {
     display: flex;
     justify-content: space-between;
@@ -47,7 +52,9 @@
     color: var(--text-light);
 }
 
-
+/* ==================== */
+/* Search and Filters */
+/* ==================== */
 .controls {
     display: flex;
     gap: var(--spacing-md);
@@ -126,7 +133,9 @@
     border-color: var(--border-dark);
 }
 
-
+/* ==================== */
+/* Grid Layout */
+/* ==================== */
 .items-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -134,7 +143,9 @@
     margin-bottom: var(--spacing-xxl);
 }
 
-
+/* ==================== */
+/* Item Card */
+/* ==================== */
 .item-card {
     background-color: var(--bg-card);
     border-radius: var(--radius-md);
@@ -190,6 +201,9 @@
     color: var(--text-secondary);
 }
 
+/* ==================== */
+/* Pagination */
+/* ==================== */
 .pagination {
     display: flex;
     justify-content: center;
@@ -233,11 +247,30 @@
     border-color: var(--border-dark);
 }
 
+/* ==================== */
+/* Empty State */
+/* ==================== */
+.empty-state {
+    text-align: center;
+    padding: 60px var(--spacing-lg);
+    color: var(--text-secondary);
+}
 
-/* ====================
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.empty-state p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* ==================== */
 /* Responsive Design */
 /* ==================== */
-/* @media (max-width: 768px) {
+@media (max-width: 768px) {
     .header {
         flex-direction: column;
         align-items: flex-start;
@@ -299,4 +332,4 @@
     .items-grid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
-} */ */
+}
