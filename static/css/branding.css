@@ -17,7 +17,6 @@
             padding: 20px;
         }
 
-        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -233,45 +232,4 @@
             background-color: #000;
             color: #fff;
             border-color: #000;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box {
-                width: 100%;
-            }
-
-            .filter-group {
-                flex-wrap: wrap;
-            }
-
-            .items-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 15px;
-            }
-
-            .item-image {
-                height: 200px;
-            }
         }
