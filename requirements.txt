@@ -1,0 +1,9 @@
+flask
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+python-multipart
+Pillow
+marshmallow
+flask_restx
