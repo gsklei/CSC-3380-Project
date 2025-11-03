@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dress Me - Browse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Dress Me</h1>
+            <div class="header-actions">
+                <span class="custom-items-badge">{{ item_count }} CUSTOM ITEMS</span>
+                <button class="reset-btn" onclick="resetFilters()">RESET</button>
+            </div>
+        </header>
+
+        <!-- Controls: Search, Filters, Sort -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search items..." onkeyup="filterItems()">
+            </div>
+            
+            <div class="filter-group">
+                <button class="filter-btn" data-category="all" onclick="filterByCategory('all')">All</button>
+                <button class="filter-btn" data-category="tops" onclick="filterByCategory('tops')">Tops</button>
+                <button class="filter-btn" data-category="bottoms" onclick="filterByCategory('bottoms')">Bottoms</button>
+                <button class="filter-btn" data-category="shoes" onclick="filterByCategory('shoes')">Shoes</button>
+                <button class="filter-btn" data-category="accessories" onclick="filterByCategory('accessories')">Accessories</button>
+            </div>
+
+            <select class="sort-select" onchange="sortItems(this.value)">
+                <option value="recent">Most Recent</option>
+                <option value="oldest">Oldest</option>
+                <option value="name">Name A-Z</option>
+                <option value="category">Category</option>
+            </select>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="items-grid" id="itemsGrid">
+            {% for item in items %}
+            <div class="item-card" data-category="{{ item.category }}" data-name="{{ item.name }}">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="item-image">
+                <div class="item-info">
+                    <div class="item-category">{{ item.category }}</div>
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-tags">
+                        {% for tag in item.tags %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button onclick="changePage(-1)" id="prevBtn">Previous</button>
+            <span class="page-number active" id="pageNumber">Page 1</span>
+            <button onclick="changePage(1)" id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let currentCategory = 'all';
+        const itemsPerPage = 12;
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            const items = document.querySelectorAll('.item-card');
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function filterItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.item-card');
+            
+            items.forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                const category = item.dataset.category.toLowerCase();
+                
+                if (name.includes(searchTerm) || category.includes(searchTerm)) {
+                    if (currentCategory === 'all' || item.dataset.category === currentCategory) {
+                        item.style.display = 'block';
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function sortItems(sortBy) {
+            const grid = document.getElementById('itemsGrid');
+            const items = Array.from(document.querySelectorAll('.item-card'));
+            
+            items.sort((a, b) => {
+                if (sortBy === 'name') {
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                } else if (sortBy === 'category') {
+                    return a.dataset.category.localeCompare(b.dataset.category);
+                }
+                return 0;
+            });
+            
+            items.forEach(item => grid.appendChild(item));
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            document.getElementById('pageNumber').textContent = `Page ${currentPage}`;
+            
+            // Enable/disable buttons based on page
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            filterByCategory('all');
+            document.querySelector('.sort-select').value = 'recent';
+        }
+
+        // Initialize
+        document.querySelector('[data-category="all"]').classList.add('active');
+    </script>
+</body>
+</html>
