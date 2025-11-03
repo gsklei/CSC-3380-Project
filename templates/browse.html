@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+
         <header class="header">
             <h1>Dress Me</h1>
             <div class="header-actions">
@@ -18,7 +18,7 @@
             </div>
         </header>
 
-        <!-- Controls: Search, Filters, Sort -->
+
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search items..." onkeyup="filterItems()">
@@ -40,7 +40,7 @@
             </select>
         </div>
 
-        <!-- Items Grid -->
+
         <div class="items-grid" id="itemsGrid">
             {% for item in items %}
             <div class="item-card" data-category="{{ item.category }}" data-name="{{ item.name }}">
@@ -58,7 +58,7 @@
             {% endfor %}
         </div>
 
-        <!-- Pagination -->
+
         <div class="pagination">
             <button onclick="changePage(-1)" id="prevBtn">Previous</button>
             <span class="page-number active" id="pageNumber">Page 1</span>
