@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dress Me - Browse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .custom-items-badge {
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .reset-btn {
+            background-color: #fff;
+            border: 2px solid #000;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* Search and Filters */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #000;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn, .sort-btn {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            background-color: #fff;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover, .sort-btn:hover {
+            border-color: #000;
+        }
+
+        .filter-btn.active, .sort-btn.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        select.sort-select {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            background-color: #fff;
+            font-weight: 500;
+        }
+
+        /* Grid Layout */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Item Card */
+        .item-card {
+            background-color: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background-color: #f5f5f5;
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-category {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .item-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .item-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .pagination button {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            background-color: #fff;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: #000;
+            background-color: #000;
+            color: #fff;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-number {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            background-color: #fff;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .pagination .page-number.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .item-image {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Dress Me</h1>
+            <div class="header-actions">
+                <span class="custom-items-badge">{{ item_count }} CUSTOM ITEMS</span>
+                <button class="reset-btn" onclick="resetFilters()">RESET</button>
+            </div>
+        </header>
+
+        <!-- Controls: Search, Filters, Sort -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search items..." onkeyup="filterItems()">
+            </div>
+            
+            <div class="filter-group">
+                <button class="filter-btn" data-category="all" onclick="filterByCategory('all')">All</button>
+                <button class="filter-btn" data-category="tops" onclick="filterByCategory('tops')">Tops</button>
+                <button class="filter-btn" data-category="bottoms" onclick="filterByCategory('bottoms')">Bottoms</button>
+                <button class="filter-btn" data-category="shoes" onclick="filterByCategory('shoes')">Shoes</button>
+                <button class="filter-btn" data-category="accessories" onclick="filterByCategory('accessories')">Accessories</button>
+            </div>
+
+            <select class="sort-select" onchange="sortItems(this.value)">
+                <option value="recent">Most Recent</option>
+                <option value="oldest">Oldest</option>
+                <option value="name">Name A-Z</option>
+                <option value="category">Category</option>
+            </select>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="items-grid" id="itemsGrid">
+            {% for item in items %}
+            <div class="item-card" data-category="{{ item.category }}" data-name="{{ item.name }}">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="item-image">
+                <div class="item-info">
+                    <div class="item-category">{{ item.category }}</div>
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-tags">
+                        {% for tag in item.tags %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button onclick="changePage(-1)" id="prevBtn">Previous</button>
+            <span class="page-number active" id="pageNumber">Page 1</span>
+            <button onclick="changePage(1)" id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let currentCategory = 'all';
+        const itemsPerPage = 12;
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            const items = document.querySelectorAll('.item-card');
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function filterItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.item-card');
+            
+            items.forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                const category = item.dataset.category.toLowerCase();
+                
+                if (name.includes(searchTerm) || category.includes(searchTerm)) {
+                    if (currentCategory === 'all' || item.dataset.category === currentCategory) {
+                        item.style.display = 'block';
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function sortItems(sortBy) {
+            const grid = document.getElementById('itemsGrid');
+            const items = Array.from(document.querySelectorAll('.item-card'));
+            
+            items.sort((a, b) => {
+                if (sortBy === 'name') {
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                } else if (sortBy === 'category') {
+                    return a.dataset.category.localeCompare(b.dataset.category);
+                }
+                return 0;
+            });
+            
+            items.forEach(item => grid.appendChild(item));
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            document.getElementById('pageNumber').textContent = `Page ${currentPage}`;
+            
+            // Enable/disable buttons based on page
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            filterByCategory('all');
+            document.querySelector('.sort-select').value = 'recent';
+        }
+
+        // Initialize
+        document.querySelector('[data-category="all"]').classList.add('active');
+    </script>
+</body>
+</html>
