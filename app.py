@@ -16,7 +16,20 @@ def browse():
             'image_url': '/static/images/shirt.jpg',
             'tags': ['casual', 'graphic']
         },
-        # ... more items
+
+       {
+            'name': 'Black Jeans',
+            'category': 'bottoms',
+            'image_url': '/static/images/blk-jeans.webp',
+            'tags': ['casual', 'jeans']
+        },
+
+        {
+            'name': 'Black Sneakers',
+            'category': 'shoes',
+            'image_url': '/static/images/blk-sneaker.jpg',
+            'tags': ['casual', 'sneaker']
+        },
     ]
     return render_template('browse.html', 
                          items=items, 
