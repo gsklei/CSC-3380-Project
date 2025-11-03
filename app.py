@@ -7,19 +7,14 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 
-@app.route("/")
-def home():
-    return "Hello, Flask!"
-
-
-@app.route('/browse')
+@app.route('/')
 def browse():
     items = [
         {
-            'name': 'Blue Plaid Shirt',
+            'name': 'White TOP Shirt',
             'category': 'tops',
             'image_url': '/static/images/shirt.jpg',
-            'tags': ['casual', 'plaid']
+            'tags': ['casual', 'graphic']
         },
         # ... more items
     ]
