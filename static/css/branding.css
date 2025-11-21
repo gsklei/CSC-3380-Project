@@ -233,3 +233,55 @@
             color: #fff;
             border-color: #000;
         }
+.item-card {
+    position: relative;   /* allows absolute positioning of dropdown */
+    overflow: visible;    /* prevents clipping dropdown */
+}
+
+.item-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 100;
+}
+
+.ellipsis-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 101;
+    padding: 5px; 
+}
+
+.item-menu-dropdown {
+    display: none; /* hidden by default */
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    min-width: 80px;
+    z-index: 102;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    flex-direction: column;
+}
+
+.item-menu-dropdown .menu-option {
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.item-menu-dropdown .menu-option:hover {
+    background-color: #f0f0f0;
+}
+
+/* JS toggle */
+.item-menu.active .item-menu-dropdown {
+    display: flex;
+}
