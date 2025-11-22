@@ -5,15 +5,46 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
 </head>
 <body>
-    <h1>Upload Your Clothing Item</h1>
+    <div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1>Dress Me</h1>
+        <div class="header-actions">
+            <button class="custom-items-badge" onclick="window.location.href='{{ url_for('browse') }}'">Back to Closet</button>
+        </div>
+    </header>
+
+
+    <h1 style="margin-bottom: 20px; display: flex; justify-content: center;">Upload Your Clothing Item</h1>
     <form method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
+
+        <!-- Image Preview -->
+        <div style="margin-bottom: 20px; display: flex; justify-content: center;">
+            <img id="preview" src="#" alt="Image Preview" style="max-width: 300px; max-height: 300px; display: none; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        </div>    
+
+        <p style="text-align: center; margin-bottom: 20px;">{{ form.photo.label }} {{ form.photo(onchange="previewImage(event)") }}</p>
         <p>{{ form.name.label }} {{ form.name() }}</p>
         <p>{{ form.category.label }} {{ form.category() }}</p>
         <p>{{ form.tags.label }} {{ form.tags() }}</p>
-        <p>{{ form.photo.label }} {{ form.photo() }}</p>
         <p>{{ form.submit() }}</p>
     </form>
-    <a href="{{ url_for('browse') }}">Back to Browse</a>
+</div>
+
+    <script>
+    function previewImage(event) {
+        const preview = document.getElementById('preview');
+        const file = event.target.files[0];
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+    }
+}
+</script>
 </body>
 </html>

@@ -99,18 +99,6 @@ def delete_item(item_id):
         print(e)
     return redirect(url_for('browse'))
 
-# --- Edit Upload ---
-@app.route('/edit/<int:item_id>', methods=['GET', 'POST'])
-def edit_item(item_id):
-    item = ClothingItem.query.get_or_404(item_id)
-
-    if request.method == 'POST':
-        item.name = request.form.get('name')
-        item.category = request.form.get('category')
-        db.session.commit()
-        return redirect(url_for('browse'))
-
-    return render_template('edit_item.html', item=item)
 
 if __name__ == '__main__':
     with app.app_context():

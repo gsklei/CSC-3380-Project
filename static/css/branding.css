@@ -47,17 +47,6 @@
             font-weight: 600;
         }
 
-        .reset-btn {
-            background-color: #fff;
-            border: 2px solid #000;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
         .reset-btn:hover {
             background-color: #000;
             color: #fff;
@@ -284,4 +273,9 @@
 /* JS toggle */
 .item-menu.active .item-menu-dropdown {
     display: flex;
+}
+
+form {
+  width: 30%;
+  margin: 0 auto;
 }
