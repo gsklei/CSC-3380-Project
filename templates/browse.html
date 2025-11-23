@@ -18,10 +18,11 @@
             <h1>Dress Me</h1>
             <div class="header-actions">
                 <button class="custom-items-badge" onclick="window.location.href='{{ url_for('upload_image') }}'">UPLOAD</button>
+                    <button class="custom-items-badge" onclick="window.location.href='{{ url_for('logout') }}'">LOG OUT</button>
             </div>
         </header>
 
-        <!-- Controls: Search, Filters, Sort -->
+        <!-- Controls: Search, Filters -->
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search items..." onkeyup="filterItems()">
@@ -35,12 +36,6 @@
                 <button class="filter-btn" data-category="accessories" onclick="filterByCategory('accessories')">Accessories</button>
             </div>
 
-            <select class="sort-select" onchange="sortItems(this.value)">
-                <option value="recent">Most Recent</option>
-                <option value="oldest">Oldest</option>
-                <option value="name">Name A-Z</option>
-                <option value="category">Category</option>
-            </select>
         </div>
 
         <!-- Items Grid -->
@@ -48,7 +43,7 @@
             {% for item in items %}
             <div class="item-card" data-category="{{ item.category }}" data-name="{{ item.name }}">
             <img src="{{ item.image_url }}" alt="{{ item.name }}" class="item-image">
-                 <!-- Ellipsis menu -->
+                 <!-- Delete Item-->
                 <div class="item-menu">
                     <button class="ellipsis-btn">⋮</button>
                     <div class="item-menu-dropdown">
