@@ -1,9 +1,10 @@
 flask
-fastapi
-uvicorn[standard]
-sqlalchemy
-pydantic
-python-multipart
-Pillow
-marshmallow
+flask_sqlalchemy
+flask_wtf
+flask_login
 flask_restx
+marshmallow
+pillow
+python-dotenv
+wtforms
+

@@ -18,6 +18,7 @@
             <h1>Dress Me</h1>
             <div class="header-actions">
                 <button class="custom-items-badge" onclick="window.location.href='{{ url_for('upload_image') }}'">UPLOAD</button>
+                 <button class="custom-items-badge" onclick="window.location.href='{{ url_for('generate_outfit') }}'">GENERATE OUTFIT</button>
                     <button class="custom-items-badge" onclick="window.location.href='{{ url_for('logout') }}'">LOG OUT</button>
             </div>
         </header>
@@ -29,7 +30,7 @@
             </div>
             
             <div class="filter-group">
-                <button class="filter-btn" data-category="all" onclick="filterByCategory('all')">All</button>
+                <button class="filter-btn" data-category="all" onclick="{% if generated %}window.location.href='{{ url_for('browse') }}'{% else %}filterByCategory('all'){% endif %}">All</button>
                 <button class="filter-btn" data-category="tops" onclick="filterByCategory('tops')">Tops</button>
                 <button class="filter-btn" data-category="bottoms" onclick="filterByCategory('bottoms')">Bottoms</button>
                 <button class="filter-btn" data-category="shoes" onclick="filterByCategory('shoes')">Shoes</button>
