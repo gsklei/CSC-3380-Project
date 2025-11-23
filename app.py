@@ -3,7 +3,7 @@ from flask_uploads import UploadSet, IMAGES, configure_uploads
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import SubmitField, SelectField, StringField
-from flask_login import LoginManager, login_user, logout_user, current_user
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from urllib.parse import urlparse
 from forms import LoginForm, RegistrationForm  # RegistrationForm is optional if you use it later
 from models import db, ClothingItem, User
@@ -25,6 +25,8 @@ with app.app_context():
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+login_manager.login_message = None
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -56,27 +58,38 @@ def get_file(filename):
 
 # --- Upload route ---
 @app.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload_image():
     form = UploadForm()
     if form.validate_on_submit():
+        # Save the uploaded image file
         filename = photos.save(form.photo.data)
+
+        # Process tags into a list
         tags_list = [t.strip() for t in form.tags.data.split(',')] if form.tags.data else []
+
+        # Create a new ClothingItem linked to the current user
         new_item = ClothingItem(
             name=form.name.data,
             category=form.category.data,
             image_filename=filename,
-            tags=json.dumps(tags_list)
+            tags=json.dumps(tags_list),
+            user_id=current_user.id  # 🔑 associate item with the logged-in user
         )
+
         db.session.add(new_item)
         db.session.commit()
+
         return redirect(url_for('browse'))
+
     return render_template('upload.html', form=form)
 
 # --- Browse route ---
 @app.route('/')
+@login_required
 def browse():
     form = UploadForm() 
-    items = ClothingItem.query.all()
+    items = ClothingItem.query.filter_by(user_id=current_user.id).all()
     # Build URL for images
     for item in items:
         item.image_url = url_for('get_file', filename=item.image_filename)
@@ -94,11 +107,17 @@ def browse():
 
 # --- Delete Upload ---
 @app.route('/delete/<int:item_id>', methods=['POST'])
+@login_required
 def delete_item(item_id):
     item = ClothingItem.query.get_or_404(item_id)
+
+    # ✅ Make sure the logged-in user owns this item
+    if item.user_id != current_user.id:
+        flash("You can only delete your own items.", "danger")
+        return redirect(url_for('browse'))
+
     try:
         # Delete image file from uploads folder
-        import os
         image_path = os.path.join(app.config['UPLOADED_PHOTOS_DEST'], item.image_filename)
         if os.path.exists(image_path):
             os.remove(image_path)
@@ -108,8 +127,10 @@ def delete_item(item_id):
         db.session.commit()
         flash(f"{item.name} has been deleted.", "success")
     except Exception as e:
+        db.session.rollback()
         flash("Error deleting item.", "danger")
         print(e)
+
     return redirect(url_for('browse'))
 
 
@@ -168,7 +189,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        flash("Account created. You can now log in.", "success")
+        login_user(user)
         return redirect(url_for("browse"))
 
     return render_template("register.html", form=form)

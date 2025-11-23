@@ -12,6 +12,7 @@
         <h1>Dress Me</h1>
     </header>
 
+    <h1 style="margin-bottom: 20px; display: flex; justify-content: center;">Register</h1>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <ul style="margin-bottom: 20px; list-style: none; padding: 0;">
@@ -71,7 +72,7 @@
         </div>
 
         <!-- Submit button -->
-        {{ form.submit(class_="filter-btn", style="width:100%; text-align:center;") }}
+        {{ form.submit(class_="custom-items-badge", style="width:100%; text-align:center;") }}
 
         <!-- Link to login -->
         <p style="margin-top:15px; text-align:center;">

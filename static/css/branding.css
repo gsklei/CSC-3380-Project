@@ -96,7 +96,7 @@
             font-weight: 500;
         }
 
-        .filter-btn:hover, .sort-btn:hover {
+        .filter-btn:hover, .sort-btn:hover, .custom-items-badge:hover {
             border-color: #E18AAA;
         }
 
