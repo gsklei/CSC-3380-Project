@@ -47,6 +47,20 @@
             font-weight: 600;
         }
 
+<<<<<<< HEAD
+        .reset-btn {
+            background-color: #fff;
+            border: 2px solid #000;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+=======
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
         .reset-btn:hover {
             background-color: #000;
             color: #fff;
@@ -96,6 +110,16 @@
             font-weight: 500;
         }
 
+<<<<<<< HEAD
+        .filter-btn:hover, .sort-btn:hover {
+            border-color: #000;
+        }
+
+        .filter-btn.active, .sort-btn.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+=======
         .filter-btn:hover, .sort-btn:hover, .custom-items-badge:hover {
             border-color: #E18AAA;
         }
@@ -104,6 +128,7 @@
             background-color: #E18AAA;
             color: #000000;
             border-color: #E18AAA;
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
         }
 
         select.sort-select {
@@ -185,7 +210,11 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
+<<<<<<< HEAD
+            margin-top: 40px;
+=======
             margin-top: 120px;
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
         }
 
         .pagination button {
@@ -222,6 +251,8 @@
             color: #fff;
             border-color: #000;
         }
+<<<<<<< HEAD
+=======
 .item-card {
     position: relative;   /* allows absolute positioning of dropdown */
     overflow: visible;    /* prevents clipping dropdown */
@@ -362,3 +393,4 @@ form {
             border-radius: 20px;
             font-size: 0.9rem;
         }
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833

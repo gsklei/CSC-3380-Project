@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+<<<<<<< HEAD
+  <component name="FacetManager">
+    <facet type="Python" name="Python">
+      <configuration sdkName="Python 3.12 (CSC-3380-Project)" />
+    </facet>
+  </component>
+  <component name="Flask">
+    <option name="enabled" value="true" />
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="true">
+=======
   <component name="Flask">
     <option name="enabled" value="true" />
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
     <exclude-output />
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+<<<<<<< HEAD
+    <orderEntry type="library" name="Python 3.12 (CSC-3380-Project) interpreter library" level="application" />
+  </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
+=======
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
@@ -16,5 +34,6 @@
         <option value="$MODULE_DIR$/templates" />
       </list>
     </option>
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
   </component>
 </module>
