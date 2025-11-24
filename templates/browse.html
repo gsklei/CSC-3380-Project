@@ -6,6 +6,13 @@
     <title>Dress Me - Browse</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
+<<<<<<< HEAD
+=======
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-betal/dist/css/bootstrap.min.css"
+    rel="stylesheet" integrity="sha384-0evHe/
+    X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <title>Flask Upload and Show Image</title>
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
 </head>
 <body>
     <div class="container">
@@ -13,12 +20,21 @@
         <header class="header">
             <h1>Dress Me</h1>
             <div class="header-actions">
+<<<<<<< HEAD
                 <span class="custom-items-badge">{{ item_count }} CUSTOM ITEMS</span>
                 <button class="reset-btn" onclick="resetFilters()">RESET</button>
             </div>
         </header>
 
         <!-- Controls: Search, Filters, Sort -->
+=======
+                <button class="custom-items-badge" onclick="window.location.href='{{ url_for('upload_image') }}'">UPLOAD</button>
+                    <button class="custom-items-badge" onclick="window.location.href='{{ url_for('logout') }}'">LOG OUT</button>
+            </div>
+        </header>
+
+        <!-- Controls: Search, Filters -->
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search items..." onkeyup="filterItems()">
@@ -32,24 +48,48 @@
                 <button class="filter-btn" data-category="accessories" onclick="filterByCategory('accessories')">Accessories</button>
             </div>
 
+<<<<<<< HEAD
             <select class="sort-select" onchange="sortItems(this.value)">
                 <option value="recent">Most Recent</option>
                 <option value="oldest">Oldest</option>
                 <option value="name">Name A-Z</option>
                 <option value="category">Category</option>
             </select>
+=======
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
         </div>
 
         <!-- Items Grid -->
         <div class="items-grid" id="itemsGrid">
             {% for item in items %}
             <div class="item-card" data-category="{{ item.category }}" data-name="{{ item.name }}">
+<<<<<<< HEAD
                 <img src="{{ item.image_url }}" alt="{{ item.name }}" class="item-image">
                 <div class="item-info">
                     <div class="item-category">{{ item.category }}</div>
                     <div class="item-name">{{ item.name }}</div>
                     <div class="item-tags">
                         {% for tag in item.tags %}
+=======
+            <img src="{{ item.image_url }}" alt="{{ item.name }}" class="item-image">
+                 <!-- Delete Item-->
+                <div class="item-menu">
+                    <button class="ellipsis-btn">⋮</button>
+                    <div class="item-menu-dropdown">
+                        <form method="POST" action="{{ url_for('delete_item', item_id=item.id) }}" 
+                              onsubmit="return confirm('Are you sure you want to delete this item?');">
+                            <button type="submit" class="menu-option">Delete</button>
+                        </form>
+            </div>
+        </div>
+                 <!-- Item info -->
+                <div class="item-info">
+                    
+                    <div class="item-category">{{ item.category }}</div>
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-tags">
+                        {% for tag in item.tags_list %}
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
                         <span class="tag">{{ tag }}</span>
                         {% endfor %}
                     </div>
@@ -66,6 +106,25 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+    <!-- Image Zoom Modal -->
+    <div id="imageModal" class="image-modal">
+        <div class="modal-box">
+            <span class="close-modal">&times;</span>
+
+            <img class="modal-content" id="zoomedImage">
+
+            <!-- Item details -->
+            <div class="modal-details">
+                <h2 id="modalName"></h2>
+                <p id="modalCategory"></p>
+                <div id="modalTags"></div>
+            </div>
+        </div>
+    </div>
+
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
     <script>
         let currentPage = 1;
         let currentCategory = 'all';
@@ -94,11 +153,23 @@
             items.forEach(item => {
                 const name = item.dataset.name.toLowerCase();
                 const category = item.dataset.category.toLowerCase();
+<<<<<<< HEAD
                 
                 if (name.includes(searchTerm) || category.includes(searchTerm)) {
                     if (currentCategory === 'all' || item.dataset.category === currentCategory) {
                         item.style.display = 'block';
                     }
+=======
+                const tags = Array.from(item.querySelectorAll('.tag')).map(t => t.textContent.toLowerCase());
+
+               const matchesSearch =
+                 name.includes(searchTerm) ||
+                category.includes(searchTerm) ||
+                tags.some(tag => tag.includes(searchTerm));
+
+        if (matchesSearch && (currentCategory === 'all' || item.dataset.category === currentCategory)) {
+            item.style.display = 'block';
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
                 } else {
                     item.style.display = 'none';
                 }
@@ -137,6 +208,80 @@
 
         // Initialize
         document.querySelector('[data-category="all"]').classList.add('active');
+<<<<<<< HEAD
     </script>
 </body>
 </html>
+=======
+
+        document.querySelectorAll('.ellipsis-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+        e.stopPropagation(); // prevent closing immediately
+        const menu = btn.parentElement;
+        menu.classList.toggle('active');
+
+        // Close other open menus
+        document.querySelectorAll('.item-menu').forEach(m => {
+            if (m !== menu) m.classList.remove('active');
+        });
+    });
+});
+
+// Close menus if clicking outside
+document.addEventListener('click', () => {
+    document.querySelectorAll('.item-menu').forEach(m => m.classList.remove('active'));
+});
+        // Image zoom functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("zoomedImage");
+            const closeBtn = document.querySelector(".close-modal");
+
+            const modalName = document.getElementById("modalName");
+            const modalCategory = document.getElementById("modalCategory");
+            const modalTags = document.getElementById("modalTags");
+
+            document.querySelectorAll(".item-image").forEach(img => {
+                img.addEventListener("click", () => {
+                    const card = img.closest(".item-card");
+
+                    // Get data
+                    const name = card.dataset.name;
+                    const category = card.dataset.category;
+                    const tags = card.querySelectorAll(".tag");
+
+                    // Show modal
+                    modal.style.display = "flex";
+                    modalImg.src = img.src;
+
+                    // Fill in text
+                    modalName.textContent = name;
+                    modalCategory.textContent = category;
+
+                    // Clear old tags
+                    modalTags.innerHTML = "";
+
+                    // Add tags
+                    tags.forEach(tag => {
+                        const span = document.createElement("span");
+                        span.textContent = tag.textContent;
+                        modalTags.appendChild(span);
+                    });
+                });
+            });
+
+            closeBtn.onclick = () => {
+                modal.style.display = "none";
+            };
+
+            modal.addEventListener("click", e => {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
+>>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833

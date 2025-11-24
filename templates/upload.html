@@ -1,0 +1,79 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Item</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
+</head>
+<body>
+    <div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1>Dress Me</h1>
+        <div class="header-actions">
+            <button class="custom-items-badge" onclick="window.location.href='{{ url_for('browse') }}'">Back to Closet</button>
+        </div>
+    </header>
+
+
+    <h1 style="margin-bottom: 20px; display: flex; justify-content: center;">Upload Your Clothing Item</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+    <!-- Image Upload Area -->
+    <div id="uploadArea" style="margin-bottom: 20px; display: flex; justify-content: center; cursor: pointer;">
+        <img id="preview" src="{{ url_for('static', filename='css/images/shirt.png') }}"
+             style="width: 300px; height: 300px; border: 2px dashed #ccc; border-radius: 10px; object-fit: cover;">
+    </div>
+
+            {{ form.photo(id="photoInput", style="display:none;", onchange="previewImage(event)") }}
+        
+        <div id="uploadButtonContainer" style="text-align: center; margin-bottom: 20px;">
+            <button type="button" id="customButton" class="custom-items-badge">
+                Upload Image
+             </button>
+        </div>
+
+        <div id="extraFields" style="display:none;">
+        <p style="text-align: center; margin-bottom: 20px;">{{ form.category(style="text-align: center;") }}</p>
+        <p style="text-align: center; margin-bottom: 20px;">{{ form.name(placeholder="Item Name", style="text-align: center;") }}</p>
+        <p style="text-align: center; margin-bottom: 20px;">{{ form.tags(placeholder="Tags", style="text-align: center;") }}</p>
+        <p>
+            <button type="submit" class="custom-items-badge" style="width:100%; text-align:center;">
+                UPLOAD
+            </button>
+        </p>
+    </div>
+    </form>
+</div>
+
+    <script>
+    const fileInput = document.getElementById('photoInput');
+    const customButton = document.getElementById('customButton');
+
+    customButton.addEventListener('click', () => {
+    fileInput.click(); // Open file selector
+    });
+
+    function previewImage(event) {
+        const preview = document.getElementById('preview');
+        const input = document.getElementById('photoInput');
+        const file = event.target.files[0];
+        const extraFields = document.getElementById('extraFields');
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.border = 'none';
+            // Show the extra fields
+            extraFields.style.display = 'block';
+            // Hide the Choose File button
+            uploadButtonContainer.style.display = 'none';
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+            extraFields.style.display = 'none';
+    }
+}
+
+</script>
+</body>
+</html>
