@@ -1,61 +1,39 @@
-<<<<<<< HEAD
-import re
-from datetime import datetime
-from backend.api import api_bp  
-
-from flask import Flask, render_template
-
-app = Flask(__name__)
-
-
-@app.route('/')
-def browse():
-    items = [
-        {
-            'name': 'White TOP Shirt',
-            'category': 'tops',
-            'image_url': '/static/images/shirt.jpg',
-            'tags': ['casual', 'graphic']
-        },
-
-       {
-            'name': 'Black Jeans',
-            'category': 'bottoms',
-            'image_url': '/static/images/blk-jeans.webp',
-            'tags': ['casual', 'jeans']
-        },
-
-        {
-            'name': 'Black Sneakers',
-            'category': 'shoes',
-            'image_url': '/static/images/blk-sneaker.jpg',
-            'tags': ['casual', 'sneaker']
-        },
-    ]
-    return render_template('browse.html', 
-                         items=items, 
-                         item_count=len(items))
-app.register_blueprint(api_bp, url_prefix="/api/v1")
-=======
-from flask import Flask, render_template, send_from_directory, url_for, redirect, request, flash
-from flask_uploads import UploadSet, IMAGES, configure_uploads
+import os
+import json
+from urllib.parse import urlparse
+from models import ClothingItem
+import random
+from flask import (
+    Flask, render_template, send_from_directory,
+    url_for, redirect, request, flash
+)
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import SubmitField, SelectField, StringField
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from urllib.parse import urlparse
-from forms import LoginForm, RegistrationForm  # RegistrationForm is optional if you use it later
+from flask_login import (
+    LoginManager, login_user, logout_user,
+    current_user, login_required
+)
+from werkzeug.utils import secure_filename
+
+from forms import LoginForm, RegistrationForm
 from models import db, ClothingItem, User
-import os
-import json
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY']= 'asklsh'
-app.config['UPLOADED_PHOTOS_DEST'] = 'uploads'
-app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(os.getcwd(), 'uploads')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///closet.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SECRET_KEY"] = "asklsh"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///closet.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+# ------------------------------
+
 
 db.init_app(app)
 with app.app_context():
@@ -71,41 +49,52 @@ login_manager.login_message = None
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-photos = UploadSet('photos', IMAGES)
-configure_uploads(app, photos)
 
 # --- Form for uploads ---
 class UploadForm(FlaskForm):
     name = StringField("Item Name")
     category = SelectField(
-        "Category", 
-        choices=[("tops","Tops"), ("bottoms","Bottoms"), ("shoes","Shoes"), ("accessories","Accessories")]
+        "Category",
+        choices=[
+            ("tops", "Tops"),
+            ("bottoms", "Bottoms"),
+            ("shoes", "Shoes"),
+            ("accessories", "Accessories"),
+        ],
     )
     tags = StringField("Tags (comma separated)")
     photo = FileField(
         validators=[
-            FileAllowed(photos, 'Only images are allowed'),
-            FileRequired('File field should not be empty')
+            FileRequired("File field should not be empty"),
+            FileAllowed(["jpg", "jpeg", "png", "webp"], "Only images are allowed"),
         ]
     )
     submit = SubmitField("Upload")
 
+
 # --- Route to serve uploaded files ---
-@app.route('/uploads/<filename>')
-def get_file(filename):    
-    return send_from_directory(app.config['UPLOADED_PHOTOS_DEST'], filename)
+@app.route("/uploads/<filename>")
+def get_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
 
 # --- Upload route ---
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route("/upload", methods=["GET", "POST"])
 @login_required
 def upload_image():
     form = UploadForm()
     if form.validate_on_submit():
-        # Save the uploaded image file
-        filename = photos.save(form.photo.data)
+        file = form.photo.data
+
+        # secure + save filename
+        filename = secure_filename(file.filename)
+        save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(save_path)
 
         # Process tags into a list
-        tags_list = [t.strip() for t in form.tags.data.split(',')] if form.tags.data else []
+        tags_list = (
+            [t.strip() for t in form.tags.data.split(",")] if form.tags.data else []
+        )
 
         # Create a new ClothingItem linked to the current user
         new_item = ClothingItem(
@@ -113,55 +102,56 @@ def upload_image():
             category=form.category.data,
             image_filename=filename,
             tags=json.dumps(tags_list),
-            user_id=current_user.id  # 🔑 associate item with the logged-in user
+            user_id=current_user.id,
         )
 
         db.session.add(new_item)
         db.session.commit()
 
-        return redirect(url_for('browse'))
+        return redirect(url_for("browse"))
 
-    return render_template('upload.html', form=form)
+    return render_template("upload.html", form=form)
+
 
 # --- Browse route ---
-@app.route('/')
+@app.route("/")
 @login_required
 def browse():
-    form = UploadForm() 
+    form = UploadForm()
     items = ClothingItem.query.filter_by(user_id=current_user.id).all()
+
     # Build URL for images
     for item in items:
-        item.image_url = url_for('get_file', filename=item.image_filename)
+        item.image_url = url_for("get_file", filename=item.image_filename)
         try:
-           item.tags_list = json.loads(item.tags) if item.tags else []
+            item.tags_list = json.loads(item.tags) if item.tags else []
         except json.JSONDecodeError:
             item.tags_list = []
 
     return render_template(
-        'browse.html',
+        "browse.html",
         items=items,
         item_count=len(items),
-        form=form
+        form=form,
     )
 
+
 # --- Delete Upload ---
-@app.route('/delete/<int:item_id>', methods=['POST'])
+@app.route("/delete/<int:item_id>", methods=["POST"])
 @login_required
 def delete_item(item_id):
     item = ClothingItem.query.get_or_404(item_id)
 
-    # ✅ Make sure the logged-in user owns this item
+    # ensure ownership
     if item.user_id != current_user.id:
         flash("You can only delete your own items.", "danger")
-        return redirect(url_for('browse'))
+        return redirect(url_for("browse"))
 
     try:
-        # Delete image file from uploads folder
-        image_path = os.path.join(app.config['UPLOADED_PHOTOS_DEST'], item.image_filename)
+        image_path = os.path.join(app.config["UPLOAD_FOLDER"], item.image_filename)
         if os.path.exists(image_path):
             os.remove(image_path)
 
-        # Delete the item from the database
         db.session.delete(item)
         db.session.commit()
         flash(f"{item.name} has been deleted.", "success")
@@ -170,7 +160,69 @@ def delete_item(item_id):
         flash("Error deleting item.", "danger")
         print(e)
 
-    return redirect(url_for('browse'))
+    return redirect(url_for("browse"))
+
+@app.route("/generate-outfit")
+@login_required
+def generate_outfit():
+    weather = request.args.get("weather", "").lower().strip()
+
+    def pick_one(cat):
+        items = ClothingItem.query.filter_by(
+            user_id=current_user.id,
+            category=cat
+        ).all()
+
+        if not items:
+            return None
+
+        # WEATHER FILTER
+        if weather:
+            weather_items = []
+            for item in items:
+                # decode JSON tags properly
+                try:
+                    tags_list = json.loads(item.tags) if item.tags else []
+                except json.JSONDecodeError:
+                    tags_list = []
+
+                for tag in tags_list:
+                    if tag.lower().strip() == weather:
+                        weather_items.append(item)
+                        break
+
+            # if ANY weather-appropriate items exist → use only those
+            if weather_items:
+                items = weather_items
+
+        return random.choice(items) if items else None
+
+    # choose clothing pieces
+    top = pick_one("tops")
+    bottom = pick_one("bottoms")
+    shoes = pick_one("shoes")
+    accessory = pick_one("accessories")  # added accessory support
+
+    if not (top and bottom and shoes):
+        flash("You need at least one top, bottom, and pair of shoes to generate an outfit.", "warning")
+        return redirect(url_for("browse"))
+
+    # final outfit list
+    outfit = [top, bottom, shoes]
+    if accessory:
+        outfit.append(accessory)
+
+    # add image URLs
+    for item in outfit:
+        item.image_url = url_for("get_file", filename=item.image_filename)
+
+    return render_template(
+        "browse.html",
+        items=outfit,
+        item_count=len(outfit),
+        form=UploadForm(),
+        generated=True
+    )
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -201,17 +253,10 @@ def login():
     return render_template("login.html", form=form)
 
 
-# --- Logout route (optional but useful) ---
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for("login"))
-
-# --- Runs the app, stores to the db --
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # create tables if they don't exist
-    app.run(debug=True)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -232,4 +277,9 @@ def register():
         return redirect(url_for("browse"))
 
     return render_template("register.html", form=form)
->>>>>>> 22522194b479e717a65f209108fb1fc15e7b4833
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
