@@ -1,305 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dress Me - Browse</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/weather.css') }}">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-betal/dist/css/bootstrap.min.css" rel="stylesheet"
-                integrity="sha384-0evHe/
-                                X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-        <title>Flask Upload and Show Image</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dress Me - Browse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
 </head>
-
 <body>
-        <div class="container">
-                <!-- Header -->
-                <header class="header">
-                        <h1>Dress Me</h1>
-                        <div class="header-actions">
-                                <button class="custom-items-badge"
-                                        onclick="window.location.href='{{ url_for('upload_image') }}'">UPLOAD</button>
-                                <button class="custom-items-badge" onclick="openWeatherPrompt()">GENERATE
-                                        OUTFIT</button>
-                                <button class="custom-items-badge"
-                                        onclick="window.location.href='{{ url_for('logout') }}'">LOG OUT</button>
-                        </div>
-                </header>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Dress Me</h1>
+            <div class="header-actions">
+                <span class="custom-items-badge">{{ item_count }} CUSTOM ITEMS</span>
+                <button class="reset-btn" onclick="resetFilters()">RESET</button>
+            </div>
+        </header>
 
-                <!-- Controls: Search, Filters -->
-                <div class="controls">
-                        <div class="search-box">
-                                <input type="text" id="searchInput" placeholder="Search items..."
-                                        onkeyup="filterItems()">
-                        </div>
+        <!-- Controls: Search, Filters, Sort -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search items..." onkeyup="filterItems()">
+            </div>
+            
+            <div class="filter-group">
+                <button class="filter-btn" data-category="all" onclick="filterByCategory('all')">All</button>
+                <button class="filter-btn" data-category="tops" onclick="filterByCategory('tops')">Tops</button>
+                <button class="filter-btn" data-category="bottoms" onclick="filterByCategory('bottoms')">Bottoms</button>
+                <button class="filter-btn" data-category="shoes" onclick="filterByCategory('shoes')">Shoes</button>
+                <button class="filter-btn" data-category="accessories" onclick="filterByCategory('accessories')">Accessories</button>
+            </div>
 
-                        <div class="filter-group">
-                                <button class="filter-btn" data-category="all"
-                                        onclick="{% if generated %}window.location.href='{{ url_for('browse') }}'{% else %}filterByCategory('all'){% endif %}">All</button>
-                                <button class="filter-btn" data-category="tops"
-                                        onclick="filterByCategory('tops')">Tops</button>
-                                <button class="filter-btn" data-category="bottoms"
-                                        onclick="filterByCategory('bottoms')">Bottoms</button>
-                                <button class="filter-btn" data-category="shoes"
-                                        onclick="filterByCategory('shoes')">Shoes</button>
-                                <button class="filter-btn" data-category="accessories"
-                                        onclick="filterByCategory('accessories')">Accessories</button>
-                        </div>
+            <select class="sort-select" onchange="sortItems(this.value)">
+                <option value="recent">Most Recent</option>
+                <option value="oldest">Oldest</option>
+                <option value="name">Name A-Z</option>
+                <option value="category">Category</option>
+            </select>
+        </div>
 
-                </div>
-
-                <!-- Items Grid -->
-                <div class="items-grid" id="itemsGrid">
-                        {% for item in items %}
-                        <div class="item-card" data-category="{{ item.category }}" data-name="{{ item.name }}">
-                                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="item-image">
-                                <!-- Delete Item-->
-                                <div class="item-menu">
-                                        <button class="ellipsis-btn">⋮</button>
-                                        <div class="item-menu-dropdown">
-                                                <form method="POST"
-                                                        action="{{ url_for('delete_item', item_id=item.id) }}"
-                                                        onsubmit="return confirm('Are you sure you want to delete this item?');">
-                                                        <button type="submit" class="menu-option">Delete</button>
-                                                </form>
-                                        </div>
-                                </div>
-                                <!-- Item info -->
-                                <div class="item-info">
-
-                                        <div class="item-category">{{ item.category }}</div>
-                                        <div class="item-name">{{ item.name }}</div>
-                                        <div class="item-tags">
-                                                {% for tag in item.tags_list %}
-                                                <span class="tag">{{ tag }}</span>
-                                                {% endfor %}
-                                        </div>
-                                </div>
-                        </div>
+        <!-- Items Grid -->
+        <div class="items-grid" id="itemsGrid">
+            {% for item in items %}
+            <div class="item-card" data-category="{{ item.category }}" data-name="{{ item.name }}">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="item-image">
+                <div class="item-info">
+                    <div class="item-category">{{ item.category }}</div>
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-tags">
+                        {% for tag in item.tags %}
+                        <span class="tag">{{ tag }}</span>
                         {% endfor %}
+                    </div>
                 </div>
-
-                <!-- Pagination -->
-                <div class="pagination">
-                        <button onclick="changePage(-1)" id="prevBtn">Previous</button>
-                        <span class="page-number active" id="pageNumber">Page 1</span>
-                        <button onclick="changePage(1)" id="nextBtn">Next</button>
-                </div>
+            </div>
+            {% endfor %}
         </div>
 
-        <!-- Weather Popup Modal -->
-        <div id="weatherModal" class="custom-modal" style="display:none;">
-                <div class="custom-modal-box">
-                        <h2>Select Weather</h2>
-                        <p>Type one of: sunny, rain, cold, windy, casual</p>
-
-                        <input id="weatherInput" class="weather-input" placeholder="Enter weather...">
-
-                        <div class="modal-buttons">
-                                <button onclick="submitWeather()" class="modal-btn confirm">OK</button>
-                                <button onclick="closeWeatherModal()" class="modal-btn cancel">Cancel</button>
-                        </div>
-                </div>
+        <!-- Pagination -->
+        <div class="pagination">
+            <button onclick="changePage(-1)" id="prevBtn">Previous</button>
+            <span class="page-number active" id="pageNumber">Page 1</span>
+            <button onclick="changePage(1)" id="nextBtn">Next</button>
         </div>
+    </div>
 
-        <!-- Image Zoom Modal -->
-        <div id="imageModal" class="image-modal">
-                <div class="modal-box">
-                        <span class="close-modal">&times;</span>
+    <script>
+        let currentPage = 1;
+        let currentCategory = 'all';
+        const itemsPerPage = 12;
 
-                        <img class="modal-content" id="zoomedImage">
-
-                        <!-- Item details -->
-                        <div class="modal-details">
-                                <h2 id="modalName"></h2>
-                                <p id="modalCategory"></p>
-                                <div id="modalTags"></div>
-                        </div>
-                </div>
-        </div>
-
-        <script>
-                function openWeatherPrompt() {
-                        const modal = document.getElementById("weatherModal");
-                        const input = document.getElementById("weatherInput");
-
-                        modal.style.display = "flex";
-                        input.value = "";
-                        input.focus();
+        function filterByCategory(category) {
+            currentCategory = category;
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            const items = document.querySelectorAll('.item-card');
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
                 }
+            });
+        }
+
+        function filterItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.item-card');
+            
+            items.forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                const category = item.dataset.category.toLowerCase();
                 
-                function closeWeatherModal() {
-                        const modal = document.getElementById("weatherModal");
-                        modal.style.display = "none";
+                if (name.includes(searchTerm) || category.includes(searchTerm)) {
+                    if (currentCategory === 'all' || item.dataset.category === currentCategory) {
+                        item.style.display = 'block';
+                    }
+                } else {
+                    item.style.display = 'none';
                 }
+            });
+        }
 
-                function submitWeather() {
-                        const input = document.getElementById("weatherInput");
-                        const w = input.value.toLowerCase().trim();
-                        const allowed = ["sunny", "rain", "cold", "windy", "casual"];
-
-                        if (!w) {
-                                closeWeatherModal();
-                                return;
-                        }
-
-                        if (!allowed.includes(w)) {
-                                alert("Invalid weather. Use: sunny, rain, cold, windy, or casual.");
-                                return;
-                        }
-
-                        closeWeatherModal();
-                        window.location.href = `/generate-outfit?weather=${w}`;
+        function sortItems(sortBy) {
+            const grid = document.getElementById('itemsGrid');
+            const items = Array.from(document.querySelectorAll('.item-card'));
+            
+            items.sort((a, b) => {
+                if (sortBy === 'name') {
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                } else if (sortBy === 'category') {
+                    return a.dataset.category.localeCompare(b.dataset.category);
                 }
-                
+                return 0;
+            });
+            
+            items.forEach(item => grid.appendChild(item));
+        }
 
-                let currentPage = 1;
-                let currentCategory = 'all';
-                const itemsPerPage = 12;
+        function changePage(direction) {
+            currentPage += direction;
+            document.getElementById('pageNumber').textContent = `Page ${currentPage}`;
+            
+            // Enable/disable buttons based on page
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+        }
 
-                function filterByCategory(category) {
-                        currentCategory = category;
-                        const buttons = document.querySelectorAll('.filter-btn');
-                        buttons.forEach(btn => btn.classList.remove('active'));
-                        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            filterByCategory('all');
+            document.querySelector('.sort-select').value = 'recent';
+        }
 
-                        const items = document.querySelectorAll('.item-card');
-                        items.forEach(item => {
-                                if (category === 'all' || item.dataset.category === category) {
-                                        item.style.display = 'block';
-                                } else {
-                                        item.style.display = 'none';
-                                }
-                        });
-                }
-
-                function filterItems() {
-                        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-                        const items = document.querySelectorAll('.item-card');
-
-                        items.forEach(item => {
-                                const name = item.dataset.name.toLowerCase();
-                                const category = item.dataset.category.toLowerCase();
-                                const tags = Array.from(item.querySelectorAll('.tag')).map(t => t.textContent.toLowerCase());
-
-                                const matchesSearch =
-                                        name.includes(searchTerm) ||
-                                        category.includes(searchTerm) ||
-                                        tags.some(tag => tag.includes(searchTerm));
-
-                                if (matchesSearch && (currentCategory === 'all' || item.dataset.category === currentCategory)) {
-                                        item.style.display = 'block';
-                                } else {
-                                        item.style.display = 'none';
-                                }
-                        });
-                }
-
-                function sortItems(sortBy) {
-                        const grid = document.getElementById('itemsGrid');
-                        const items = Array.from(document.querySelectorAll('.item-card'));
-
-                        items.sort((a, b) => {
-                                if (sortBy === 'name') {
-                                        return a.dataset.name.localeCompare(b.dataset.name);
-                                } else if (sortBy === 'category') {
-                                        return a.dataset.category.localeCompare(b.dataset.category);
-                                }
-                                return 0;
-                        });
-
-                        items.forEach(item => grid.appendChild(item));
-                }
-
-                function changePage(direction) {
-                        currentPage += direction;
-                        document.getElementById('pageNumber').textContent = `Page ${currentPage}`;
-
-                        // Enable/disable buttons based on page
-                        document.getElementById('prevBtn').disabled = currentPage === 1;
-                }
-
-                function resetFilters() {
-                        document.getElementById('searchInput').value = '';
-                        filterByCategory('all');
-                        document.querySelector('.sort-select').value = 'recent';
-                }
-
-                // Initialize
-                document.querySelector('[data-category="all"]').classList.add('active');
-
-                document.querySelectorAll('.ellipsis-btn').forEach(btn => {
-                        btn.addEventListener('click', e => {
-                                e.stopPropagation(); // prevent closing immediately
-                                const menu = btn.parentElement;
-                                menu.classList.toggle('active');
-
-                                // Close other open menus
-                                document.querySelectorAll('.item-menu').forEach(m => {
-                                        if (m !== menu) m.classList.remove('active');
-                                });
-                        });
-                });
-
-                // Close menus if clicking outside
-                document.addEventListener('click', () => {
-                        document.querySelectorAll('.item-menu').forEach(m => m.classList.remove('active'));
-                });
-                // Image zoom functionality
-                document.addEventListener('DOMContentLoaded', function () {
-                        const modal = document.getElementById("imageModal");
-                        const modalImg = document.getElementById("zoomedImage");
-                        const closeBtn = document.querySelector(".close-modal");
-
-                        const modalName = document.getElementById("modalName");
-                        const modalCategory = document.getElementById("modalCategory");
-                        const modalTags = document.getElementById("modalTags");
-
-                        document.querySelectorAll(".item-image").forEach(img => {
-                                img.addEventListener("click", () => {
-                                        const card = img.closest(".item-card");
-
-                                        // Get data
-                                        const name = card.dataset.name;
-                                        const category = card.dataset.category;
-                                        const tags = card.querySelectorAll(".tag");
-
-                                        // Show modal
-                                        modal.style.display = "flex";
-                                        modalImg.src = img.src;
-
-                                        // Fill in text
-                                        modalName.textContent = name;
-                                        modalCategory.textContent = category;
-
-                                        // Clear old tags
-                                        modalTags.innerHTML = "";
-
-                                        // Add tags
-                                        tags.forEach(tag => {
-                                                const span = document.createElement("span");
-                                                span.textContent = tag.textContent;
-                                                modalTags.appendChild(span);
-                                        });
-                                });
-                        });
-
-                        closeBtn.onclick = () => {
-                                modal.style.display = "none";
-                        };
-
-                        modal.addEventListener("click", e => {
-                                if (e.target === modal) {
-                                        modal.style.display = "none";
-                                }
-                        });
-                });
-
-        </script>
+        // Initialize
+        document.querySelector('[data-category="all"]').classList.add('active');
+    </script>
 </body>
-
 </html>
->
