@@ -165,23 +165,54 @@ def delete_item(item_id):
 @app.route("/generate-outfit")
 @login_required
 def generate_outfit():
+    weather = request.args.get("weather", "").lower().strip()
+
     def pick_one(cat):
         items = ClothingItem.query.filter_by(
             user_id=current_user.id,
             category=cat
         ).all()
+
+        if not items:
+            return None
+
+        # WEATHER FILTER
+        if weather:
+            weather_items = []
+            for item in items:
+                # decode JSON tags properly
+                try:
+                    tags_list = json.loads(item.tags) if item.tags else []
+                except json.JSONDecodeError:
+                    tags_list = []
+
+                for tag in tags_list:
+                    if tag.lower().strip() == weather:
+                        weather_items.append(item)
+                        break
+
+            # if ANY weather-appropriate items exist → use only those
+            if weather_items:
+                items = weather_items
+
         return random.choice(items) if items else None
 
+    # choose clothing pieces
     top = pick_one("tops")
     bottom = pick_one("bottoms")
     shoes = pick_one("shoes")
+    accessory = pick_one("accessories")  # added accessory support
 
     if not (top and bottom and shoes):
         flash("You need at least one top, bottom, and pair of shoes to generate an outfit.", "warning")
         return redirect(url_for("browse"))
 
-    # reuse browse.html but pass a special outfit
+    # final outfit list
     outfit = [top, bottom, shoes]
+    if accessory:
+        outfit.append(accessory)
+
+    # add image URLs
     for item in outfit:
         item.image_url = url_for("get_file", filename=item.image_filename)
 
@@ -189,9 +220,11 @@ def generate_outfit():
         "browse.html",
         items=outfit,
         item_count=len(outfit),
-        form=UploadForm(),      
-        generated=True         
+        form=UploadForm(),
+        generated=True
     )
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
