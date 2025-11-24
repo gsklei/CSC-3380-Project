@@ -112,6 +112,26 @@ def edit_item(item_id):
 
     return render_template('edit_item.html', item=item)
 
+
+@app.route("/build-outfit")
+def build_outfit():
+    # Get items by category
+    tops = ClothingItem.query.filter_by(category="tops").all()
+    bottoms = ClothingItem.query.filter_by(category="bottoms").all()
+    shoes = ClothingItem.query.filter_by(category="shoes").all()
+
+    # 🔹 Add image_url to each item (same idea as in browse())
+    for item in tops + bottoms + shoes:
+        item.image_url = url_for('get_file', filename=item.image_filename)
+
+    # Now outfit.html can safely use item.image_url
+    return render_template(
+        "outfit.html",
+        tops=tops,
+        bottoms=bottoms,
+        shoes=shoes
+    )
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # create tables if they don't exist
