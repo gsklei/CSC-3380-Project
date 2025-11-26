@@ -51,27 +51,42 @@
             justify-content: center;
         }
 
+                /* FULL IMAGE, NO CROPPING, NO BACKGROUND */
         .outfit-slot {
             width: 100%;
-            max-width: 320px;
-            border-radius: 12px;
-            background-color: #f5f5f5;
-            overflow: hidden;
+            max-width: 400px;   /* you can adjust this width */
+            padding: 0;
+            margin: 0;
+            background: none;   /* removes box background */
+            border: none;       /* removes borders */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 8px;
         }
 
+        /* KEEP ORIGINAL PROPORTIONS — FULL IMAGE */
         .outfit-slot img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 8px;
-            background-color: #eaeaea;
+            width: 100%;         /* fill the width of the box */
+            height: auto;        /* keep original size */
+            object-fit: contain; /* show full picture with no cropping */
+            display: block;
+            background: none;    /* remove gray bg */
+            border-radius: 0;    /* optional */
         }
 
+        /* Remove labels under pictures since they get in the way */
+        .outfit-slot p {
+            display: none;
+        }
+
+        /* Make all the images stack with no gaps */
+        #outfitPreview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+    
         .outfit-slot p {
             margin-top: 6px;
             font-size: 0.85rem;
